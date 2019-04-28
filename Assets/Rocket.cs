@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
-    [SerializeField] float rotateSpeed = 100f;
-    [SerializeField] float thrustSpeed = 100f;
+    [SerializeField] float rotateSpeed = 250f;
+    [SerializeField] float thrustSpeed = 40f;
 
     Rigidbody rb;
     AudioSource flySound;
@@ -31,14 +29,13 @@ public class Rocket : MonoBehaviour
         {
             case "Friendly":
                 break;
-            case "Fuel":
-                print("Fuel");
-                break;
             case "Finish":
                 print("VICTORY!");
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);   // Loads the next level
                 break;
             default:
                 print("DEAD");
+                SceneManager.LoadScene(0);  // Returns to level 1
                 break;
         }
     }
@@ -59,8 +56,6 @@ public class Rocket : MonoBehaviour
         }
 
         rb.freezeRotation = false;
-
-
     }
 
     private void Thrust()
