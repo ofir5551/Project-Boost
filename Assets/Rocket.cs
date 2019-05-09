@@ -6,8 +6,16 @@ public class Rocket : MonoBehaviour
     [SerializeField] float rotateSpeed = 250f;
     [SerializeField] float thrustSpeed = 40f;
 
+    [SerializeField] AudioClip MainEngine;
+    [SerializeField] AudioClip LevelUPSound;
+    [SerializeField] AudioClip DeathSound;
+
+    [SerializeField] ParticleSystem ThurstParticles;
+    [SerializeField] ParticleSystem SuccessParticles;
+    [SerializeField] ParticleSystem DeathParticles;
+
     Rigidbody rb;
-    AudioSource flySound;
+    AudioSource audioSource;
 
     enum State { Alive, Dying, Transcending };
     State state = State.Alive;
@@ -16,7 +24,7 @@ public class Rocket : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        flySound = GetComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -38,16 +46,34 @@ public class Rocket : MonoBehaviour
             case "Friendly":
                 break;
             case "Finish":
-                state = State.Transcending;
-                print("Transcending to next level (" + (SceneManager.GetActiveScene().buildIndex + 2) + ")......");
-                Invoke("LoadNextScene", 2f);   // Loads the next level
+                StartLevelUpSequence();
                 break;
             default:
-                state = State.Dying;
-                print("DEAD");
-                Invoke("LoadFirstLevel", 2f);  // Returns to level 1
+                StartDeathSequence();
                 break;
         }
+    }
+
+    private void StartLevelUpSequence()
+    {
+        SuccessParticles.Play();
+        state = State.Transcending;
+        
+        print("Transcending to next level (" + (SceneManager.GetActiveScene().buildIndex + 2) + ")......");
+        Invoke("LoadNextScene", 2f);   // Loads the next level
+        audioSource.Stop();
+        audioSource.PlayOneShot(LevelUPSound);
+    }
+
+    private void StartDeathSequence()
+    {
+        DeathParticles.Play();
+        state = State.Dying;
+
+        print("DEAD");
+        Invoke("LoadFirstLevel", 2f);  // Returns to level 1
+        audioSource.Stop();
+        audioSource.PlayOneShot(DeathSound);
     }
 
     private void LoadFirstLevel()
@@ -88,12 +114,14 @@ public class Rocket : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             rb.AddRelativeForce(Vector3.up * thrustSpeed);
-            if (flySound.isPlaying == false)
-                flySound.Play();
+            ThurstParticles.Play();
+            if (audioSource.isPlaying == false)
+                audioSource.PlayOneShot(MainEngine);
         }
         else
         {
-            flySound.Stop();
+            audioSource.Stop();
+            ThurstParticles.Stop();
         }
     }
 }
