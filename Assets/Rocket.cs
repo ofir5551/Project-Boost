@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class Rocket : MonoBehaviour
 {
     [SerializeField] float rotateSpeed = 250f;
-    [SerializeField] float thrustSpeed = 40f;
+    [SerializeField] float thrustSpeed = 1800f;
 
     [SerializeField] AudioClip MainEngine;
     [SerializeField] AudioClip LevelUPSound;
@@ -16,6 +16,7 @@ public class Rocket : MonoBehaviour
 
     Rigidbody rb;
     AudioSource audioSource;
+    static int lives = 3;
 
     enum State { Alive, Dying, Transcending };
     State state = State.Alive;
@@ -25,6 +26,10 @@ public class Rocket : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         audioSource = GetComponent<AudioSource>();
+        if (lives == 0)
+            lives = 3;
+        print("Level " + (SceneManager.GetActiveScene().buildIndex + 1) + " successfully loaded.");
+        print("Lives: " + lives);
     }
 
     // Update is called once per frame
@@ -58,7 +63,7 @@ public class Rocket : MonoBehaviour
     {
         SuccessParticles.Play();
         state = State.Transcending;
-        
+
         print("Transcending to next level (" + (SceneManager.GetActiveScene().buildIndex + 2) + ")......");
         Invoke("LoadNextScene", 2f);   // Loads the next level
         audioSource.Stop();
@@ -69,11 +74,19 @@ public class Rocket : MonoBehaviour
     {
         DeathParticles.Play();
         state = State.Dying;
-
         print("DEAD");
-        Invoke("LoadFirstLevel", 2f);  // Returns to level 1
+        if (lives == 1)
+        {
+            print("GAME OVER");
+            Invoke("LoadFirstLevel", 2f);  // Returns to level 1
+            
+        }
+        else
+            Invoke("LoadCurrentLevel", 2f);  // Returns to level 1
+
         audioSource.Stop();
         audioSource.PlayOneShot(DeathSound);
+        lives -= 1;
     }
 
     private void LoadFirstLevel()
@@ -82,11 +95,16 @@ public class Rocket : MonoBehaviour
         state = State.Alive;
     }
 
+    private void LoadCurrentLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        state = State.Alive;
+    }
+
     private void LoadNextScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         state = State.Alive;
-        print("Level " + (SceneManager.GetActiveScene().buildIndex + 2) + " successfully loaded.");
     }
 
     private void Rotation()
@@ -109,11 +127,9 @@ public class Rocket : MonoBehaviour
 
     private void Thrust()
     {
-        // float tSpeed = thrustSpeed * Time.deltaTime;
-
         if (Input.GetKey(KeyCode.Space))
         {
-            rb.AddRelativeForce(Vector3.up * thrustSpeed);
+            rb.AddRelativeForce(Vector3.up * thrustSpeed * Time.deltaTime);
             ThurstParticles.Play();
             if (audioSource.isPlaying == false)
                 audioSource.PlayOneShot(MainEngine);

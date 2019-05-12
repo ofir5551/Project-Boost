@@ -438,7 +438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotateSpeed: 250
-  thrustSpeed: 40
+  thrustSpeed: 1800
   MainEngine: {fileID: 8300000, guid: ad9a35386adaa204695baaa99095d51a, type: 3}
   LevelUPSound: {fileID: 8300000, guid: 223333e51b4efef459378224bc6b45d3, type: 3}
   DeathSound: {fileID: 8300000, guid: 3f4d142919dc2f246b0b004959e70655, type: 3}
