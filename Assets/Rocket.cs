@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Rocket : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class Rocket : MonoBehaviour
 
     Rigidbody rb;
     AudioSource audioSource;
+    public Text scoreText;
     static int lives = 3;
 
     enum State { Alive, Dying, Transcending };
@@ -40,6 +42,9 @@ public class Rocket : MonoBehaviour
             Thrust();
             Rotation();
         }
+
+        // Score text
+        scoreText.text = "Lives: " + lives;
     }
 
     private void OnCollisionEnter(Collision collision)

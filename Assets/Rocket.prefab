@@ -445,6 +445,7 @@ MonoBehaviour:
   ThurstParticles: {fileID: 198100717987632706}
   SuccessParticles: {fileID: 198631065576464594}
   DeathParticles: {fileID: 198204746467626686}
+  scoreText: {fileID: 0}
 --- !u!1 &8098205190885145327
 GameObject:
   m_ObjectHideFlags: 0
